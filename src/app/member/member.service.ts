@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateMemberDto } from './dto/create-member.dto';
-import { UpdateMemberDto } from './dto/update-member.dto';
+import { UpdateMemberDto, UpdatePasswordDto } from './dto/update-member.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Member } from './entities/member.entity';
@@ -37,8 +37,52 @@ export class MemberService {
   }
 
   async update(id: string, updateMemberDto: UpdateMemberDto) {
+    if (updateMemberDto.email) {
+      const isEmailExist = await this.memberModel.findOne({
+        email: updateMemberDto.email,
+      });
+      if (isEmailExist) {
+        throw new HttpException('Email already exist', HttpStatus.BAD_REQUEST);
+      }
+
+      const isGoogleLogin = await this.memberModel
+        .findById(id)
+        .select('isGoogleLogin');
+      if (isGoogleLogin) {
+        throw new HttpException(
+          'Cannot update email for Google login',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
     return await this.memberModel
       .findByIdAndUpdate(id, updateMemberDto, { new: true })
+      .select('-password');
+  }
+
+  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+    const member = await this.memberModel.findById(id);
+    if (!member) {
+      throw new HttpException('Member not found', HttpStatus.NOT_FOUND);
+    }
+
+    const isPasswordMatch = await bcrypt.compare(
+      updatePasswordDto.password,
+      member.password,
+    );
+    if (!isPasswordMatch) {
+      throw new HttpException('Password not match', HttpStatus.BAD_REQUEST);
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(
+      updatePasswordDto.newPassword,
+      salt,
+    );
+
+    return await this.memberModel
+      .findByIdAndUpdate(id, { password: hashedPassword }, { new: true })
       .select('-password');
   }
 

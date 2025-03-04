@@ -1,5 +1,6 @@
 import { OmitType, PartialType, PickType } from '@nestjs/mapped-types';
 import { CreateMemberDto } from './create-member.dto';
+import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class UpdateMemberDto extends PartialType(
   OmitType(CreateMemberDto, ['password'] as const),
@@ -7,6 +8,11 @@ export class UpdateMemberDto extends PartialType(
   avatar: string;
 }
 
-export class UpdateMemberPasswordDto extends PickType(CreateMemberDto, [
+export class UpdatePasswordDto extends PickType(CreateMemberDto, [
   'password',
-] as const) {}
+] as const) {
+  @IsNotEmpty({ message: 'Password is required' })
+  @IsString({ message: 'Password must be a string' })
+  @Length(6, 20, { message: 'Password must be between 6 and 20 characters' })
+  newPassword: string;
+}
