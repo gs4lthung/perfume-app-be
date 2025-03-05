@@ -29,7 +29,7 @@ export class MemberService {
   }
 
   async findAll() {
-    return await this.memberModel.find().select('-password');
+    return await this.memberModel.find({ isAdmin: false }).select('-password');
   }
 
   async findOne(id: string) {
