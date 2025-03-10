@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Request,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -22,8 +21,8 @@ export class CommentController {
   @UseGuards(AuthGuard)
   @UseGuards(MemberGuard)
   @Post()
-  create(@Body() createCommentDto: CreateCommentDto, @Request() req) {
-    return this.commentService.create(createCommentDto, req.id);
+  create(@Body() createCommentDto: CreateCommentDto) {
+    return this.commentService.create(createCommentDto);
   }
 
   @Get()
@@ -34,6 +33,11 @@ export class CommentController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.commentService.findOne(id);
+  }
+
+  @Get('/perfume/:id')
+  findAllByPerfume(@Param('id') id: string) {
+    return this.commentService.findAllByPerfume(id);
   }
 
   @Patch(':id')

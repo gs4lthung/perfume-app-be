@@ -33,10 +33,13 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
     const payload = {
       sub: member._id,
+      name: member.name,
       email: member.email,
+      avatar: member.avatar,
+      gender: member.gender,
+      yob: member.yob,
       isAdmin: member.isAdmin,
     };
 

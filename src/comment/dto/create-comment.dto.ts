@@ -8,4 +8,10 @@ export class CreateCommentDto {
   @Min(1, { message: 'Rating must be at least 1' })
   @Max(3, { message: 'Rating must be at most 3' })
   rating: number;
+
+  @IsNotEmpty({ message: 'Perfume ID is required' })
+  perfumeId: string;
+
+  @IsNotEmpty({ message: 'Author ID is required' })
+  authorId: string;
 }

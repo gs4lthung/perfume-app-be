@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Brand } from 'src/app/brand/entities/brand.entity';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 export type PerfumeDocument = HydratedDocument<Perfume>;
 
@@ -32,6 +33,9 @@ export class Perfume {
 
   @Prop()
   uri: string;
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }] })
+  comments: Comment[];
 
   @Prop({ default: false })
   isDeleted: boolean;

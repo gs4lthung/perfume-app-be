@@ -7,15 +7,19 @@ import {
   Param,
   Delete,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { AdminGuard } from '../member/admin.guard';
 
 @Controller('brand')
 export class BrandController {
   constructor(private readonly brandService: BrandService) {}
 
+  @UseGuards(AuthGuard, AdminGuard)
   @Post()
   @HttpCode(201)
   create(@Body() createBrandDto: CreateBrandDto) {

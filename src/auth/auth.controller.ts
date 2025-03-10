@@ -10,7 +10,7 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
-  @Post('signin')
+  @Post('login')
   signin(@Body() signinDto: SigninDto) {
     return this.authService.signin(signinDto);
   }

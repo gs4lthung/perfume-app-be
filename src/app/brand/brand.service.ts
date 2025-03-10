@@ -4,13 +4,19 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Brand } from './entities/brand.entity';
+import { Perfume } from '../perfume/entities/perfume.entity';
 
 @Injectable()
 export class BrandService {
-  constructor(@InjectModel('Brand') private brandModel: Model<Brand>) {}
+  constructor(
+    @InjectModel('Brand') private brandModel: Model<Brand>,
+    @InjectModel('Perfume') private perfumeModel: Model<Perfume>,
+  ) {}
 
-  create(createBrandDto: CreateBrandDto) {
-    const isBrandExist = this.brandModel.findOne({ name: createBrandDto.name });
+  async create(createBrandDto: CreateBrandDto) {
+    const isBrandExist = await this.brandModel.findOne({
+      name: createBrandDto.name,
+    });
     if (isBrandExist) {
       throw new HttpException('Brand already exist', HttpStatus.BAD_REQUEST);
     }
@@ -19,24 +25,38 @@ export class BrandService {
     return createdBrand.save();
   }
 
-  findAll() {
-    return this.brandModel.find();
+  async findAll() {
+    return await this.brandModel.find({ isDeleted: false });
   }
 
-  findOne(id: string) {
-    return this.brandModel.findById(id);
+  async findOne(id: string) {
+    return await this.brandModel.findById(id);
   }
 
-  update(id: string, updateBrandDto: UpdateBrandDto) {
-    const isBrandExist = this.brandModel.findOne({ name: updateBrandDto.name });
+  async update(id: string, updateBrandDto: UpdateBrandDto) {
+    const isBrandExist = await this.brandModel.findOne({
+      name: updateBrandDto.name,
+    });
     if (isBrandExist) {
       throw new HttpException('Brand already exist', HttpStatus.BAD_REQUEST);
     }
 
-    return this.brandModel.findByIdAndUpdate(id, updateBrandDto, { new: true });
+    return await this.brandModel.findByIdAndUpdate(id, updateBrandDto, {
+      new: true,
+    });
   }
 
-  remove(id: string) {
-    return this.brandModel.findByIdAndUpdate(id, { isDeleted: true });
+  async remove(id: string) {
+    const brandToDelete = await this.brandModel.findByIdAndUpdate(id, {
+      isDeleted: true,
+    });
+    const perfumesToDelete = await this.perfumeModel.find({ brand: id });
+    perfumesToDelete.forEach(async (perfume) => {
+      await this.perfumeModel.findByIdAndUpdate(perfume._id, {
+        isDeleted: true,
+      });
+    });
+
+    return brandToDelete;
   }
 }

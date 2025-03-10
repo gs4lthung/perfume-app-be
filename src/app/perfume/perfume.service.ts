@@ -1,26 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePerfumeDto } from './dto/create-perfume.dto';
 import { UpdatePerfumeDto } from './dto/update-perfume.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Perfume } from './entities/perfume.entity';
 
 @Injectable()
 export class PerfumeService {
-  create(createPerfumeDto: CreatePerfumeDto) {
-    return 'This action adds a new perfume';
+  constructor(@InjectModel('Perfume') private perfumeModel: Model<Perfume>) {}
+
+  async create(createPerfumeDto: CreatePerfumeDto) {
+    return await this.perfumeModel.create(createPerfumeDto);
   }
 
-  findAll() {
-    return `This action returns all perfume`;
+  async findAll() {
+    return await this.perfumeModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} perfume`;
+  async findOne(id: string) {
+    return await this.perfumeModel.findById(id);
   }
 
-  update(id: number, updatePerfumeDto: UpdatePerfumeDto) {
-    return `This action updates a #${id} perfume`;
+  async update(id: string, updatePerfumeDto: UpdatePerfumeDto) {
+    return await this.perfumeModel.findByIdAndUpdate(id, updatePerfumeDto, {
+      new: true,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} perfume`;
+  async remove(id: string) {
+    return await this.perfumeModel.findByIdAndUpdate(id, { isDeleted: true });
   }
 }
