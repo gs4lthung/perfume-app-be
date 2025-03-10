@@ -10,5 +10,6 @@ import { MemberSchema } from './entities/member.entity';
   ],
   controllers: [MemberController],
   providers: [MemberService],
+  exports: [MemberService],
 })
 export class MemberModule {}
