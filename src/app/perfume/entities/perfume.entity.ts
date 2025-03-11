@@ -14,7 +14,7 @@ export class Perfume {
   brand: Brand;
 
   @Prop({ required: true, trim: true })
-  decription: string;
+  description: string;
 
   @Prop({ required: true })
   price: number;

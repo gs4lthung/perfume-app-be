@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Length,
 } from 'class-validator';
@@ -21,9 +22,11 @@ export class CreateMemberDto {
   @Length(6, 20, { message: 'Password must be between 6 and 20 characters' })
   password: string;
 
+  @IsOptional()
   @IsBoolean({ message: 'Gender must be a boolean' })
   gender: boolean;
 
+  @IsOptional()
   @IsNumber({}, { message: 'Year of birth must be a number' })
   yob: number;
 }

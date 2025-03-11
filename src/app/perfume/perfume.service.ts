@@ -13,12 +13,60 @@ export class PerfumeService {
     return await this.perfumeModel.create(createPerfumeDto);
   }
 
-  async findAll() {
-    return await this.perfumeModel.find();
+  async findAll(query: string, filter: string) {
+    if (!query && !filter) {
+      query = '';
+      filter = '';
+    }
+    return await this.perfumeModel.aggregate([
+      {
+        $match: {
+          name: { $regex: query, $options: 'i' },
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'brands',
+          localField: 'brand',
+          foreignField: '_id',
+          as: 'brand',
+        },
+      },
+      {
+        $unwind: '$brand',
+      },
+      {
+        $match: filter
+          ? {
+              'brand.name': { $regex: filter, $options: 'i' },
+            }
+          : {},
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          price: 1,
+          'brand.id': '$brand._id',
+          'brand.name': '$brand.name',
+          volume: 1,
+          targetAudience: 1,
+          incredients: 1,
+          concentration: 1,
+          uri: 1,
+        },
+      },
+    ]);
   }
 
   async findOne(id: string) {
-    return await this.perfumeModel.findById(id);
+    return await this.perfumeModel
+      .findOne({
+        _id: id,
+        isDeleted: false,
+      })
+      .populate('brand');
   }
 
   async update(id: string, updatePerfumeDto: UpdatePerfumeDto) {

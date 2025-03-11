@@ -39,20 +39,11 @@ export class MemberService {
   async update(id: string, updateMemberDto: UpdateMemberDto) {
     if (updateMemberDto.email) {
       const isEmailExist = await this.memberModel.findOne({
+        _id: { $ne: id },
         email: updateMemberDto.email,
       });
       if (isEmailExist) {
         throw new HttpException('Email already exist', HttpStatus.BAD_REQUEST);
-      }
-
-      const isGoogleLogin = await this.memberModel
-        .findById(id)
-        .select('isGoogleLogin');
-      if (isGoogleLogin) {
-        throw new HttpException(
-          'Cannot update email for Google login',
-          HttpStatus.BAD_REQUEST,
-        );
       }
     }
 
