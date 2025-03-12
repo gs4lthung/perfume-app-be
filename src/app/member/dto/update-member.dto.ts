@@ -11,8 +11,10 @@ export class UpdateMemberDto extends PartialType(
 export class UpdatePasswordDto extends PickType(CreateMemberDto, [
   'password',
 ] as const) {
-  @IsNotEmpty({ message: 'Password is required' })
-  @IsString({ message: 'Password must be a string' })
-  @Length(6, 20, { message: 'Password must be between 6 and 20 characters' })
+  @IsNotEmpty({ message: 'New password is required' })
+  @IsString({ message: 'New password must be a string' })
+  @Length(6, 20, {
+    message: 'New password must be between 6 and 20 characters',
+  })
   newPassword: string;
 }

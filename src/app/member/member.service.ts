@@ -63,7 +63,7 @@ export class MemberService {
       member.password,
     );
     if (!isPasswordMatch) {
-      throw new HttpException('Password not match', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Old password not match', HttpStatus.BAD_REQUEST);
     }
 
     const salt = await bcrypt.genSalt(10);
