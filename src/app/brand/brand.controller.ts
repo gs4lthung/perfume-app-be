@@ -36,6 +36,7 @@ export class BrandController {
     return this.brandService.findOne(id);
   }
 
+  @UseGuards(AuthGuard, AdminGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
     return this.brandService.update(id, updateBrandDto);

@@ -8,10 +8,13 @@ import {
   Delete,
   HttpCode,
   Put,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto, UpdatePasswordDto } from './dto/update-member.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('member')
 export class MemberController {
@@ -33,11 +36,17 @@ export class MemberController {
     return this.memberService.findOne(id);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMemberDto: UpdateMemberDto) {
-    return this.memberService.update(id, updateMemberDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateMemberDto: UpdateMemberDto,
+    @Req() req: { id: string },
+  ) {
+    return this.memberService.update(id, updateMemberDto, req.id);
   }
 
+  @UseGuards(AuthGuard)
   @Put(':id')
   updatePassword(
     @Param('id') id: string,

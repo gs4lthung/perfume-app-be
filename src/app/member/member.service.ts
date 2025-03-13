@@ -36,7 +36,14 @@ export class MemberService {
     return await this.memberModel.findById(id).select('-password');
   }
 
-  async update(id: string, updateMemberDto: UpdateMemberDto) {
+  async update(
+    id: string,
+    updateMemberDto: UpdateMemberDto,
+    requesterId: string,
+  ) {
+    if (requesterId !== id) {
+      throw new HttpException('Forbidden Access', HttpStatus.FORBIDDEN);
+    }
     if (updateMemberDto.email) {
       const isEmailExist = await this.memberModel.findOne({
         _id: { $ne: id },

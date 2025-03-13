@@ -35,6 +35,7 @@ export class BrandService {
 
   async update(id: string, updateBrandDto: UpdateBrandDto) {
     const isBrandExist = await this.brandModel.findOne({
+      _id: { $ne: id },
       name: updateBrandDto.name,
     });
     if (isBrandExist) {
